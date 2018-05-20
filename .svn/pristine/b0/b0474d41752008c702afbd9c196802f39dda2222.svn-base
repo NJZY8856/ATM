@@ -1,0 +1,203 @@
+package controller.admin;
+
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
+import dao.AdminDao;
+import login.AdmnFunction;
+import model.MoreInfo;
+import util.MyDocument;
+
+public class ReportLoss {
+	private JFrame frame;
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ReportLoss window = new ReportLoss(0);
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	String[] columnNames = { "身份证号","姓名","卡号","余额","类型","状态","联系方式","地址","管理员"};
+	DefaultTableModel model = new DefaultTableModel();
+	public void verifyInfo(String card_id,String user_id){
+		List list=new AdminDao().selectUserInfo(card_id,user_id);
+		for(int i=0;i<list.size();i++){	
+			MoreInfo moreInfo=(MoreInfo) list.get(i);
+			String str[] = new String[9];
+			str[0]=moreInfo.getId();
+			str[1]=moreInfo.getName();
+			str[2]=moreInfo.getCard_id();
+			str[3]=String.valueOf(moreInfo.getMoneys());
+			str[4]=String.valueOf(moreInfo.getType());
+			str[5]=String.valueOf(moreInfo.getStatus());
+	//		str[6]=moreInfo.getPhone();
+	//		str[7]=moreInfo.getAddress();
+	//		str[8]=moreInfo.getAdmin_id();
+			model.addRow(str);	
+		}
+	}
+
+	
+	//i=1表示挂失，i=2表示销户,i=3解挂，i=4解冻
+	public ReportLoss(int i){
+		if(i==1){
+			frame = new JFrame("挂失");
+		}
+		if(i==2){
+			frame = new JFrame("销户");
+		}
+		if(i==3){
+			frame = new JFrame("解除挂失");
+		}
+		if(i==4){
+			frame = new JFrame("解冻");
+		}
+		frame.setBounds(100, 100, 600, 500);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel label1=new JLabel("银行卡号：");
+		label1.setBounds(100, 60, 120, 35);
+		label1.setFont(new Font("黑体", Font.BOLD, 15));
+		frame.getContentPane().add(label1);
+		
+		JLabel label2=new JLabel("身份证号：");
+		label2.setBounds(100,130,120,35);
+		label2.setFont(new Font("黑体", Font.BOLD, 15));
+		frame.getContentPane().add(label2);
+		
+		JTextField text1=new JTextField();
+		text1.setBounds(180, 60, 200, 35);
+		text1.setDocument(new MyDocument(19));
+		frame.getContentPane().add(text1);
+		
+		JTextField text2=new JTextField();
+		text2.setBounds(180, 130, 200, 35);
+		text2.setDocument(new MyDocument(18));
+		frame.getContentPane().add(text2);
+		
+		JLabel label3=new JLabel("请核实信息：");
+		label3.setBounds(50,250,190,35);
+		label3.setFont(new Font("黑体", Font.BOLD, 18));				
+		frame.getContentPane().add(label3);
+		label3.setVisible(false);
+		
+		JButton button3=new JButton();
+		button3.setBounds(230,400,150,40);
+		button3.setFont(new Font("黑体", Font.BOLD, 18));
+		frame.getContentPane().add(button3);
+		button3.setVisible(false);
+			
+		JButton button1=new JButton("确定");
+		button1.setBounds(230,190,80,40);
+		button1.setFont(new Font("黑体", Font.BOLD, 18));
+		frame.getContentPane().add(button1);
+		button1.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				String card_id=text1.getText().trim();
+				String user_id=text2.getText().trim();
+				
+				label3.setVisible(true);
+				
+				JTable table = new JTable();
+		//		new JScrollPane().setViewportView(table);
+				model.setColumnIdentifiers(columnNames);
+				table.setModel(model);
+				JScrollPane scrollPane = new JScrollPane(table);
+				scrollPane.setBounds(50, 310, 500, 60);
+				frame.add(scrollPane);
+				table.setVisible(true);
+				System.out.println("jjjj");
+				
+				verifyInfo(card_id,user_id);
+				
+				new AdminDao().checkAdmin(card_id);
+				MoreInfo moreinfo=new MoreInfo();
+				int status=moreinfo.getStatus();
+				System.out.println(status);
+				if(i==1){
+					if(status!=1){
+						JOptionPane.showMessageDialog(frame.getContentPane(), "当前状态无法挂失", "系统信息", JOptionPane.INFORMATION_MESSAGE);
+					}
+					button3.setText("确定挂失");
+					button3.setVisible(true);
+					button3.addActionListener(new ActionListener(){
+						public void actionPerformed(ActionEvent e){
+							new AdminDao().updateStatus(card_id, 2);
+							JOptionPane.showMessageDialog(frame.getContentPane(), "挂失成功", "系统信息", JOptionPane.INFORMATION_MESSAGE);
+						}
+					});
+				}
+				if(i==2){
+					if(status==4){
+						JOptionPane.showMessageDialog(frame.getContentPane(), "改卡已销户", "系统信息", JOptionPane.INFORMATION_MESSAGE);
+					}
+					button3.setText("确定销户");
+					button3.setVisible(true);
+					 button3.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e){
+								new AdminDao().updateStatus(card_id, 4);
+								JOptionPane.showMessageDialog(frame.getContentPane(), "销户成功", "系统信息", JOptionPane.INFORMATION_MESSAGE);
+							}
+						});
+					 
+				}
+				if(i==3){
+					if(status!=2){
+						JOptionPane.showMessageDialog(frame.getContentPane(), "当前状态无法解除挂失", "系统信息", JOptionPane.INFORMATION_MESSAGE);
+					}
+					button3.setText("确定解除挂失");
+					button3.setVisible(true);
+					 button3.addActionListener(new ActionListener(){
+							public void actionPerformed(ActionEvent e){
+								new AdminDao().updateStatus(card_id, 1);
+								JOptionPane.showMessageDialog(frame.getContentPane(), "解除挂失成功", "系统信息", JOptionPane.INFORMATION_MESSAGE); 
+							}
+						});
+				}
+				if(i==4){
+					if(status!=3){
+						JOptionPane.showMessageDialog(frame.getContentPane(), "当前状态无法解冻", "系统信息", JOptionPane.INFORMATION_MESSAGE);
+					}
+					button3.setText("确定解除冻结");
+					button3.setVisible(true);
+					button3.addActionListener(new ActionListener(){
+						public void actionPerformed(ActionEvent e){
+							new AdminDao().updateStatus(card_id, 1);
+							JOptionPane.showMessageDialog(frame.getContentPane(), "解除冻结成功", "系统信息", JOptionPane.INFORMATION_MESSAGE);
+						}
+					});
+				}
+				
+		
+			}
+		});
+		
+		JButton button2=new JButton("返回");
+		button2.setBounds(130,190,80,40);
+		button2.setFont(new Font("黑体", Font.BOLD, 18));
+		frame.getContentPane().add(button2);
+		
+		frame.setVisible(true);
+		
+	}
+	
+}

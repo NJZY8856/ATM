@@ -1,0 +1,67 @@
+package controller.card;
+
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import login.AdmnFunction;
+import login.UserFunction;
+
+public class changePwdSucc {
+	private JFrame frame;
+	private JButton button1;
+	private JButton button2;
+	
+	public static void main(String[] args) {
+					changePwdSucc window = new changePwdSucc(0);
+					window.frame.setVisible(true);
+	}
+	
+	public changePwdSucc(int i){
+		frame=new JFrame("修改密码成功！");
+		frame.setBounds(100, 100, 689, 541);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JButton button1=new JButton("返回");
+		button1.setBounds(0,386,110, 40);
+		//button1.setForeground(Color.WHITE);
+		button1.setFont(new Font("黑体", Font.BOLD, 18));
+		frame.getContentPane().add(button1);
+		button1.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				frame.dispose();
+				if(i==1){
+					new UserFunction();
+				}
+				if(i==2){
+					new AdmnFunction();
+				}
+			}
+		});
+		
+		JButton button2=new JButton("退卡");
+		button2.setBounds(563,386,110,40);
+		button2.setFont(new Font("黑体",Font.BOLD,18));
+		frame.getContentPane().add(button2);
+		button2.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				System.exit(0);
+			}
+		});
+		
+		JLabel label_1 = new JLabel("");
+		label_1.setIcon(new ImageIcon(".\\3.jpg"));
+		label_1.setBounds(0, -16, 689, 541);
+		frame.getContentPane().add(label_1);
+		
+		frame.setVisible(true);
+}
+	}
+

@@ -1,0 +1,366 @@
+package controller.card;
+
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import dao.CardDao;
+import dao.TradDao;
+import login.UserFunction;
+import model.CardModel;
+import model.TradModel;
+import service.CardService;
+import service.TradService;
+import util.CurrentCardInfo;
+import util.WindowSize;
+import javax.swing.JPanel;
+/**
+ * 转账
+ * @author LiangShuilian
+ *
+ */
+public class TransMoney implements WindowSize {
+
+	private JFrame frame;
+	private JTextField trad_to;
+	private JTextField moneys;
+	private String bank_code;//所属银行编号
+	private JButton button_1;
+	private JButton button_2;
+	private JButton button_3;
+	private JButton button_4;
+	private JLabel label_tip;
+	private JLabel label_warn;
+	private JLabel label;
+	private JLabel label_trad_to;
+	private JLabel label_1;
+	private JLabel label_2;
+	private JLabel label_3;
+	private JLabel label_money;
+	private JPanel panel;
+	CurrentCardInfo cardInfo=new CurrentCardInfo();
+	CardService cardServcie = new CardService();
+	TradService tradService = new TradService();
+	CardModel card = new CardModel();
+	TradModel trad = new TradModel();
+	
+	private double trad_money = 0.0;//输入的交易金额
+	private double cost = 0.0;//手续费
+	private double total_money = 0.0;//总金额 = 转账金额 + 转账手续费 + 跨行手续费
+	double today_trad_money = 0.0;//当日已经转账金额
+	private double current_money = 0.0;//当前余额
+	private double curremt_credit_line = 0.0;//当前透支度
+	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					TransMoney window = new TransMoney();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	public TransMoney() {
+		initialize();
+	}
+
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(F_0, F_1, F_2, F_3);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		panel = new JPanel();
+		panel.setBounds(P_0, P_1, P_2, P_3);
+		panel.setLayout(null);
+		
+		label_tip = new JLabel("请输入信息：");
+		label_tip.setFont(new Font("黑体", Font.BOLD, 19));
+		label_tip.setForeground(Color.WHITE);
+		label_tip.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_tip.setBounds(163, 102, 203, 41);
+//		frame.getContentPane().add(label_tip);
+		panel.add(label_tip);
+//		panel.add(label_warn);
+		
+	////////输入目标卡号   start     /////////////////////////////////////
+		
+		label = new JLabel("目标卡号：");
+		label.setFont(new Font("黑体", Font.BOLD, 18));
+		label.setForeground(Color.WHITE);
+		label.setHorizontalAlignment(SwingConstants.RIGHT);
+		label.setBounds(146, 169, 126, 29);
+		label.setVisible(true);
+		panel.add(label);
+		
+		trad_to = new JTextField();
+		trad_to.setBounds(282, 169, 184, 29);
+		trad_to.setVisible(true);
+		panel.add(trad_to);
+		trad_to.setColumns(10);
+		
+		label_trad_to = new JLabel("");
+		label_trad_to.setFont(new Font("黑体", Font.BOLD, 18));
+		label_trad_to.setForeground(Color.WHITE);
+		label_trad_to.setBounds(282, 169, 284, 29);
+		label_trad_to.setVisible(false);
+		panel.add(label_trad_to);
+		
+		label_2 = new JLabel("");//提示
+		label_2.setFont(new Font("黑体", Font.BOLD, 15));
+		label_2.setForeground(Color.RED);
+		label_2.setBounds(282, 201, 184, 23);
+		panel.add(label_2);
+		
+	///////输入转账金额----start -------------- //////////////////////////	
+		
+		label_1 = new JLabel("转账金额：");
+		label_1.setFont(new Font("黑体", Font.BOLD, 18));
+		label_1.setForeground(Color.WHITE);
+		label_1.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_1.setBounds(146, 234, 126, 29);
+		label_1.setVisible(true);
+		panel.add(label_1);
+		
+		moneys = new JTextField();
+		moneys.setBounds(282, 234, 184, 29);
+		moneys.setVisible(true);
+		panel.add(moneys);
+		moneys.setColumns(10);
+		
+		label_money = new JLabel("");
+		label_money.setFont(new Font("黑体", Font.BOLD, 18));
+		label_money.setForeground(Color.WHITE);
+		label_money.setBounds(282, 234, 184, 29);
+		label_money.setVisible(false);
+		panel.add(label_money);
+		
+		label_3 = new JLabel("");//提示
+		label_3.setFont(new Font("黑体", Font.BOLD, 15));
+		label_3.setForeground(Color.RED);
+		label_3.setBounds(282, 266, 184, 23);
+		panel.add(label_3);
+		
+	/////输入信息界面的按钮          start   //////////////////////////	
+		
+		button_1 = new JButton("返回");
+		button_1.setFont(new Font("黑体", Font.BOLD, 18));
+		button_1.setBounds(5, 387, 133, 41);
+		button_1.setVisible(true);
+		
+		label_warn = new JLabel("");					//提示警告等
+		label_warn.setBounds(30, 273, 615, 66);
+		panel.add(label_warn);
+		label_warn.setFont(new Font("黑体", Font.BOLD, 19));
+		label_warn.setForeground(Color.RED);
+		panel.add(button_1);
+		button_1.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				frame.dispose();
+				new UserFunction();
+			}
+		});
+
+		button_2 = new JButton("确认转账");
+		button_2.setFont(new Font("黑体", Font.BOLD, 18));
+		button_2.setBounds(547, 387, 133, 41);
+		button_2.setVisible(true);
+		panel.add(button_2);
+		button_2.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				boolean flag = false;
+				label_2.setText("");label_3.setText("");
+				if(trad_to.getText().trim().equals("") || !trad_to.getText().trim().matches("[0-9]{19}")){
+					label_2.setText("卡号输入不规范(19位)");
+				}else if(trad_to.getText().trim().equals(cardInfo.getCardInfo().getCard_id().trim())){
+					label_2.setText("不能转账给本卡号");
+				}else if(moneys.getText().trim().equals("") || !moneys.getText().trim().matches("([1-9]\\d*|0)(\\.\\d{1,2})?")){
+					label_3.setText("金额输入不规范(不超2位小数)");
+				}else{
+					flag = true;
+				} 
+				
+				bank_code = cardInfo.bankcode;
+				if(flag){
+					card = cardServcie.getCardModel(cardInfo.getCardInfo().getCard_id());//获取当前卡最新信息
+					System.out.println("--status---"+card.getStatus());
+					if(card.getStatus() == 1){//状态
+						//交易类型：01存款，02取款，03转出，04转入
+						today_trad_money = tradService.getTodayTrad(cardInfo.getCardInfo().getCard_id().trim(),3) + trad_money;//当日转账金额
+						trad_money = Double.parseDouble(moneys.getText().trim());//转账金额
+						if(trad_money <= 10000.0){//不超1万
+							if(cardServcie.getCardModel(trad_to.getText().trim()) != null){//目标卡号存在
+								if((today_trad_money+trad_money) <= 20000.0){//一天累计取款不超2万
+									current_money = card.getMoneys();
+									curremt_credit_line = card.getCredit_line();
+									if(cardInfo.getCardInfo().getBank_code().trim().equals(bank_code)){//是否跨行
+	///*该行代码用于测试玩*/			if(!cardInfo.getCardInfo().getBank_code().trim().equals("")){
+										 //不跨行，总金额 = 1%转账金额 + 转账手续费
+										cost = trad_money*0.01;
+										total_money = trad_money + cost;
+										if(total_money <= current_money+curremt_credit_line){
+											//确认转账，换界面
+	
+											label_tip.setText("请确认转账信息：");
+											trad_to.setVisible(false);//隐藏卡号输入框
+											label_trad_to.setVisible(true);label_trad_to.setText(trad_to.getText());//显示卡号
+											moneys.setVisible(false);//隐藏金额输入框
+											label_money.setVisible(true);label_money.setText(moneys.getText());//显示金额
+											button_1.setVisible(false);button_2.setVisible(false);button_3.setVisible(true);button_4.setVisible(true);//显示隐藏按钮
+											if(total_money <= current_money){
+												label_warn.setVisible(true);label_warn.setText("注意：转账手续费 ："+cost+"元，是否确认转账？");
+											}else{
+												label_warn.setVisible(true);label_warn.setText("注意：手续费 ："+cost+"元，卡透支："+(total_money-current_money)+"确认转账？");
+											}
+										}else{
+											
+											panel.setVisible(false);
+											String str= "余额不足，无法转账------";
+											frame.getContentPane().add(new ConfirmPanel(frame,str,Color.red));
+											frame.validate();
+										}
+									}else{//跨行收手续费         询问是否继续
+										
+										cost = trad_money*0.01 +trad_money*0.001;
+										total_money = trad_money + cost;
+										if(total_money <= current_money+curremt_credit_line){
+											//换界面，
+											label_tip.setText("请确认转账信息：");
+											trad_to.setVisible(false);//隐藏卡号输入框
+											label_trad_to.setVisible(true);label_trad_to.setText(trad_to.getText());//显示卡号
+											moneys.setVisible(false);//隐藏金额输入框
+											label_money.setVisible(true);label_money.setText(moneys.getText());//显示金额
+											button_1.setVisible(false);button_2.setVisible(false);button_3.setVisible(true);button_4.setVisible(true);//显示隐藏按钮
+											label_warn.setVisible(true);label_warn.setText("注意：转账手续费 ："+cost+"元，是否确认转账？");
+											if(total_money <= current_money){
+												label_warn.setVisible(true);label_warn.setText("注意：跨行和转账手续费 ："+cost+"元，是否确认转账？");
+											}else{
+												label_warn.setVisible(true);label_warn.setText("注意：跨行和转账手续费 ："+cost+"元，卡需透支："+(total_money-current_money)+"是否确认转账？");
+											}
+										}else{
+											
+											panel.setVisible(false);
+											String str= "余额不足，无法转账1111111111";
+											frame.getContentPane().add(new ConfirmPanel(frame,str,Color.red));
+											frame.validate();
+										}
+									}
+								}else{
+									panel.setVisible(false);
+									String str= "<html>今天已累计转账 "+today_trad_money+"元，<br>一天内累计转账不得超过 20,000元</html>";
+									System.out.println(str);
+									frame.getContentPane().add(new ConfirmPanel(frame,str,Color.red));
+									frame.validate();
+								}
+							}else{
+								panel.setVisible(false);
+								String str= "目标卡号不存在，转账失败";
+								frame.getContentPane().add(new ConfirmPanel(frame,str,Color.red));
+								frame.validate();
+							}
+						}else{
+							panel.setVisible(false);
+							String str= "一次转账不得超过 10,000元";
+							frame.getContentPane().add(new ConfirmPanel(frame,str,Color.red));
+							frame.validate();
+						}
+					}else{// 02挂失  03冻结
+						String str= "卡状态不正常";
+						str = "该卡号已冻结，无法转账";
+						panel.setVisible(false);
+						frame.getContentPane().add(new ConfirmPanel(frame,str,Color.red));
+						frame.validate();
+					}
+				}
+			}
+		});
+		
+	/////    再次确认界面按钮        start      ///////////////////////////////////////
+		
+		button_4 = new JButton("取消");
+		button_4.setFont(new Font("黑体", Font.BOLD, 18));
+		button_4.setBounds(5, 387, 133, 41);
+		button_4.setVisible(false);
+//		frame.getContentPane().add(button_4);
+		panel.add(button_4);
+		button_4.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				label_tip.setText("请输入信息：");
+				trad_to.setVisible(true);//显示卡号输入框
+				moneys.setVisible(true);//显示金额输入框
+				button_1.setVisible(true);button_2.setVisible(true);button_3.setVisible(false);button_4.setVisible(false);//显示隐藏按钮
+				label_warn.setText("");
+			}
+		});
+		
+		button_3 = new JButton("确认");
+		button_3.setFont(new Font("黑体", Font.BOLD, 18));
+		button_3.setBounds(547, 387, 133, 41);
+		button_3.setVisible(false);
+//		frame.getContentPane().add(button_3);
+		panel.add(button_3);
+		button_3.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				TradModel from_trad = new TradModel();//转账卡
+				TradModel to_trad = new TradModel();//目标卡
+				int rel = 0;
+				//目标卡
+				if(cardServcie.TradCardMoneys(trad_money, trad_to.getText().trim(),4)){
+					to_trad.setCard_id(trad_to.getText().trim());
+					to_trad.setTrad_to(cardInfo.getCardInfo().getCard_id());
+					to_trad.setAmount(trad_money);
+					to_trad.setTrad_type(4);//交易类型：01存款，02取款，03转出，04转入
+					if(tradService.addTrad(to_trad)){
+						//转账卡
+						if(cardServcie.TradCardMoneys(total_money, cardInfo.getCardInfo().getCard_id().trim(),3)){
+							from_trad.setCard_id(cardInfo.getCardInfo().getCard_id());
+							from_trad.setTrad_to(trad_to.getText().trim());
+							from_trad.setAmount(trad_money);
+							from_trad.setTrad_type(3);//交易类型：01存款，02取款，03转出，04转入
+							if(tradService.addTrad(from_trad)){
+								rel = 1;
+							}
+						}
+					}
+				}
+				if(rel == 1){
+					panel.setVisible(false);label_warn.setVisible(false);
+					String str= "转账成功";
+					frame.getContentPane().add(new ConfirmPanel(frame,str,Color.green));
+					frame.validate();
+				}else{
+					panel.setVisible(false);label_warn.setVisible(false);
+					String str= "转账失败";
+					frame.getContentPane().add(new ConfirmPanel(frame,str,Color.red));
+					frame.validate();
+				}
+			}
+		});
+		
+	//////// ------------ ending-----   ////////////////////
+		
+		JLabel lblBackground = new JLabel("");//背景
+		lblBackground.setIcon(new ImageIcon(".\\4.jpg"));
+		lblBackground.setBounds(0, 10, P_2, P_3);
+//		frame.getContentPane().add(lblBackground);
+		panel.add(lblBackground);
+
+		frame.getContentPane().add(panel);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
+		frame.setVisible(true);
+	}
+}

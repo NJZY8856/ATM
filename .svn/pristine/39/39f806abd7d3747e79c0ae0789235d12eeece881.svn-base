@@ -1,0 +1,170 @@
+package dao;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import model.CardModel;
+import util.JdbcUtil;
+
+public class CardDao{
+
+	/**
+	 * 
+	 * @param card_id
+	 * @param password
+	 * @return
+	 */
+	public static CardModel checkCard(String card_id) {
+		CardModel card = null;
+		Connection conn = JdbcUtil.getConnection();//获取数据库连接
+		PreparedStatement stmt = null;
+		String sql = "SELECT * from Card  where card_id = ? ";
+		ResultSet rs = null;
+		try{
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, card_id);
+			rs = stmt.executeQuery();//执行SQL语句
+			while (rs.next()) {
+				//获取数据
+				String id = rs.getString("id");
+				String password = rs.getString("password");
+				String bank_code = rs.getString("bank_code");
+				double moneys = rs.getDouble("moneys");
+				double limit = rs.getDouble("credit_line");
+				int type = rs.getInt("type");
+				int status = rs.getInt("STATUS");
+				String open_date = rs.getString("open_date");
+				//把数据封装进定义的card对象
+				card = new CardModel();
+				card.setCard_id(card_id);
+				card.setPassword(password);
+				card.setId(id);
+				card.setBank_code(bank_code);
+				card.setMoneys(moneys);
+				card.setCredit_line(limit);
+				card.setType(type);
+				card.setStatus(status);
+				card.setOpen_date(open_date);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			JdbcUtil.close(conn, stmt, rs);//关闭连接
+		}
+		return card;
+	}
+	/**
+	 * 
+	 * @param status
+	 * @param card_id
+	 * @author Lanny
+	 */
+	public static void updateStatus(int status,String card_id) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			conn= JdbcUtil.getConnection();//获取数据库连接
+			String sql = "update Card set status=? where card_id = ? ";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, status);
+			stmt.setString(2, card_id);
+			
+			stmt.executeUpdate();//执行SQL语句
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			JdbcUtil.close(conn, stmt);//关闭连接
+		}
+	}
+	/*  修改用户密码
+	*/
+	public static int changePasswd(String password,String card_id){
+		System.out.println(password);
+		System.out.println(card_id);
+		int i=0;
+		Connection conn=null;
+		PreparedStatement stmt=null;
+		try{
+			String sql="update Card set password=? where card_id=?";
+			conn=JdbcUtil.getConnection();//获取数据库连接
+			stmt=conn.prepareStatement(sql);
+			stmt.setString(1, password);
+			stmt.setString(2, card_id);
+			i=stmt.executeUpdate();
+	}catch(Exception e){
+		e.printStackTrace();
+	}finally {
+		JdbcUtil.close(conn, stmt);//关闭连接
+	}
+		System.out.println(i);
+		return i;
+		
+	}
+	/**
+	 * 修改card表余额以及透支额度
+	 * @author Lanny
+	 */
+	public static boolean updateMoney(double moneys,double credit_line, String card_id) {
+		boolean result = false;
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			conn = JdbcUtil.getConnection();
+
+			String sql = "UPDATE Card SET moneys=?,credit_line=? where card_id=?"; // ?表示一个参数的占位符
+
+			stmt = conn.prepareStatement(sql);
+
+			stmt.setDouble(1, moneys);
+			stmt.setDouble(2, credit_line);
+			stmt.setString(3, card_id);
+			
+			int c = stmt.executeUpdate();
+			if (c > 0) {
+				result = true;
+			}
+		} catch (Exception e) {
+			result = false;
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} finally {
+			JdbcUtil.close(conn, stmt);
+		}
+		return result;
+	}
+	/**
+	 * 添加卡信息
+	 * @param card
+	 * @return
+	 */
+	public static boolean addCard(CardModel card) {
+		boolean result = false;
+		String sql = "insert into card values(?,?,?,?,?,?,?,?,getdate())";
+		Connection conn = JdbcUtil.getConnection();
+		PreparedStatement stmt = null;
+		try {
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, card.getId());
+			stmt.setString(2, card.getPassword());
+			stmt.setString(3, card.getId());	
+			stmt.setString(4, card.getBank_code());
+			stmt.setDouble(5, card.getMoneys());
+			stmt.setDouble(6, card.getCredit_line());
+			stmt.setInt(7, card.getType());
+			stmt.setInt(8, card.getStatus());
+			int c = stmt.executeUpdate();
+			if (c > 0) {
+				result = true;
+			}
+		} catch (SQLException e) {
+				result = false;
+			e.printStackTrace();
+		} 
+		return result;
+	}
+	
+}

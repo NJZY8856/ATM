@@ -1,0 +1,239 @@
+﻿package login;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+import javax.swing.JLabel;
+import javax.swing.ImageIcon;
+import javax.swing.JTextField;
+
+import dao.CardDao;
+import model.CardModel;
+import service.CardService;
+import util.CurrentCardInfo;
+import util.MyDocument;
+import util.WindowSize;
+
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JPasswordField;
+import javax.swing.JButton;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+/**
+ * 
+ * @author Lanny
+ *
+ */
+public class UserLogin implements WindowSize {
+
+	private JFrame frame;
+	private JPasswordField passwordField;
+	private JTextField textField;
+
+	private int loginFlag = 0;
+	private CardModel card;
+	
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					UserLogin window = new UserLogin();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public UserLogin() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(F_0, F_1, F_2, F_3);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(78, 67, 233, -52);
+		frame.getContentPane().add(tabbedPane);
+
+		JLabel label = new JLabel("密码");
+		label.setForeground(Color.WHITE);
+		label.setFont(new Font("黑体", Font.BOLD, 18));
+		label.setBounds(215, 330, 55, 33);
+		frame.getContentPane().add(label);
+
+		passwordField = new JPasswordField();
+		passwordField.setDocument(new MyDocument(6));
+		passwordField.addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent e) {
+				int temp=e.getKeyChar();
+				if(temp>57){
+					e.consume();
+				}else if(temp < 48){  
+                    e.consume();  
+                } 
+			}
+		});
+		passwordField.setBounds(280, 334, 130, 33);
+		frame.getContentPane().add(passwordField);
+
+		textField = new JTextField();
+		textField.setDocument(new MyDocument(19));
+		textField.addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent e) {
+				int temp=e.getKeyChar();
+				if(temp>57){
+					e.consume();
+				}else if(temp < 48){  
+                    e.consume();  
+                } 
+			}
+		});
+		textField.setFont(new Font("宋体", Font.PLAIN, 18));
+		textField.setBounds(280, 283, 171, 33);
+		frame.getContentPane().add(textField);
+		textField.setColumns(10);
+
+		JLabel label_2 = new JLabel("卡号");
+		label_2.setForeground(Color.WHITE);
+		label_2.setFont(new Font("黑体", Font.BOLD, 18));
+		label_2.setBounds(215, 283, 55, 33);
+		frame.getContentPane().add(label_2);
+
+		JLabel label_t1 = new JLabel("");
+		label_t1.setForeground(Color.RED);
+		label_t1.setFont(new Font("宋体", Font.BOLD, 18));
+		label_t1.setBounds(461, 284, 192, 31);
+		frame.getContentPane().add(label_t1);
+
+		JLabel label_t2 = new JLabel("");
+		label_t2.setForeground(Color.RED);
+		label_t2.setFont(new Font("宋体", Font.BOLD, 18));
+		label_t2.setBounds(420, 333, 233, 33);
+		frame.getContentPane().add(label_t2);
+
+		JButton button = new JButton("登录");
+		button.setForeground(Color.BLACK);
+		button.setFont(new Font("黑体", Font.BOLD, 18));
+		button.setBounds(280, 394, 116, 33);
+		frame.getContentPane().add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int input = getNamePwdRight(textField.getText(), passwordField.getPassword());
+				if (input == 3) {
+					label_t2.setText("密码错误，请重新输入");
+					/*
+					 * 3次冻结功能实现
+					 */
+					loginFlag++;
+					passwordField.setText(null);
+					if (loginFlag == 3) {
+						label_t1.setText("银行卡已冻结");
+						new CardService().updateCardStatus(3, textField.getText());
+					}
+				} else if (input == 1) {// 登录成功
+					frame.dispose();
+					new UserFunction();
+					new CurrentCardInfo().setCardInfo(card);
+
+				} else if (input == 2) {
+					label_t1.setText("卡号不存在");
+				} else if (input == 4) {
+					label_t1.setText("银行卡已冻结");
+				}else if (input == 41) {
+					frame.dispose();
+					new UserFunction();
+					new CurrentCardInfo().setCardInfo(card);
+				} else if (input == 5) {
+					label_t1.setText("格式不规范");
+				} else if (input == 6) {
+					label_t2.setText("格式不规范");
+				} else if (input == 7) {
+					label_t1.setText("银行卡已挂失");
+				} else if (input == 8) {
+					label_t1.setText("银行卡已销户");
+				}
+			}
+		});
+
+		JLabel label_1 = new JLabel("");
+		label_1.setFont(new Font("宋体", Font.PLAIN, 29));
+		label_1.setForeground(Color.BLACK);
+		label_1.setIcon(new ImageIcon(".\\1.jpg"));
+		label_1.setBounds(P_0, P_1, P_2, P_3);
+		frame.getContentPane().add(label_1);
+		frame.setResizable(false);
+		frame.setVisible(true);
+
+	}
+
+	/**
+	 * 
+	 * @param id
+	 *            输入card_id
+	 * @param pwdChar
+	 *            输入card_pwd
+	 * @return
+	 */
+	public int getNamePwdRight(String id, char[] pwdChar) {
+		String pwd = String.valueOf(pwdChar);
+		if (id.matches("[0-9]{19}")) {
+			new CardDao();
+			// 检查数据库中是否存在
+			card = new CardService().getCardModel(id);
+			if (card == null) {
+				// System.out.println("卡号不存在2");
+				return 2;
+			} else {// 存在:判断状态与密码
+				if (pwd.matches("[0-9]{6}")) {
+					/**
+					 * 状态码-------修改
+					 */
+					if (!card.getPassword().trim().equals(pwd)) {
+						// System.out.println("密码错误3");
+						return 3;
+					} else if (card.getStatus() == 3) {
+						// System.out.println("银行卡已冻结4");
+						if(card.getPassword().trim().equals(pwd)){
+							return 41;//冻结后密码输入正确
+						}
+						return 4;
+					} else if (card.getStatus() == 2) {
+						// System.out.println("银行卡已挂失7");
+						return 7;
+					} else if (card.getStatus() == 4) {
+						// System.out.println("银行卡已销户8");
+						return 8;
+					} else {
+						// System.out.println("成功登录1");
+						return 1;
+					}
+				} else {
+					// System.out.println("pwd格式不规范6");
+					return 6;
+				}
+			}
+		} else {
+			// System.out.println("id格式不规范5");
+			return 5;
+		}
+	}
+}

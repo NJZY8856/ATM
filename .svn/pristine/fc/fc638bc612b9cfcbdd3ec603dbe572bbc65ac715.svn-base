@@ -1,0 +1,127 @@
+package controller.admin;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Font;
+import java.awt.SystemColor;
+
+import javax.swing.JTextField;
+
+import login.AdmnFunction;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class SelectUser {
+
+	private JFrame frame;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JButton button_1;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					SelectUser window = new SelectUser(0);
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public SelectUser(int i) {
+		initialize(i);
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize(int i) {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel label = new JLabel("卡号：");
+		label.setFont(new Font("黑体", Font.BOLD, 18));
+		label.setBounds(61, 50, 57, 35);
+		frame.getContentPane().add(label);
+		
+		JLabel label_1 = new JLabel("身份证号：");
+		label_1.setFont(new Font("黑体", Font.BOLD, 18));
+		label_1.setBounds(31, 108, 104, 35);
+		frame.getContentPane().add(label_1);
+		
+		textField = new JTextField();
+		textField.setBounds(145, 50, 163, 35);
+		frame.getContentPane().add(textField);
+		textField.setColumns(10);
+		
+		textField_1 = new JTextField();
+		textField_1.setColumns(10);
+		textField_1.setBounds(145, 108, 163, 35);
+		frame.getContentPane().add(textField_1);
+		
+		JButton button = new JButton("确定");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("jj"+textField.getText());
+				System.out.println("kk"+textField_1.getText());
+				if(textField.getText().trim().equals("")||textField_1.getText().trim().equals("")){
+					System.out.println("jlll");
+					JOptionPane.showMessageDialog(frame.getContentPane(), "卡号和身份证号不能为空", "系统信息", JOptionPane.INFORMATION_MESSAGE);
+				}else{
+					String card_id=textField.getText().trim();
+					String user_id=textField_1.getText().trim();
+					System.out.println("jdj"+card_id);
+					System.out.println("kdk"+user_id);
+					if(i==1){
+						new ChangeStatus(card_id,user_id,1);
+						frame.dispose();
+					}
+					if(i==2){
+						new ChangeStatus(card_id,user_id,2);
+						frame.dispose();
+					}
+				}
+			}
+		});
+		button.setFont(new Font("黑体", Font.BOLD, 18));
+		button.setBounds(308, 190, 91, 35);
+		frame.getContentPane().add(button);
+		
+		button_1 = new JButton("返回");
+		button_1.setFont(new Font("黑体", Font.BOLD, 18));
+		button_1.setBounds(33, 190, 85, 35);
+		frame.getContentPane().add(button_1);
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				new AdmnFunction();
+			}
+		});
+		
+		JLabel lblBackground = new JLabel("background");
+		lblBackground.setBackground(SystemColor.text);
+		lblBackground.setFont(new Font("SimSun-ExtB", Font.PLAIN, 12));
+		lblBackground.setIcon(new ImageIcon(".\\5.jpg"));
+		lblBackground.setBounds(-95, 0, 680, 499);
+		frame.getContentPane().add(lblBackground);
+		frame.setVisible(true);
+	}	
+}

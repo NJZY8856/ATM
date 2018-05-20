@@ -1,0 +1,37 @@
+package util;
+
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import util.MyThread;
+
+public class TestMyThread{
+	private static JFrame frame;
+	private static JLabel lblNewLabel;
+	private static JButton bt;
+	public static void main(String[] args) {
+		frame=new JFrame();
+		frame.setSize(500, 300);
+		//frame.setLayout(null);
+		frame.setLayout(new FlowLayout());
+		lblNewLabel = new JLabel("New label");
+		Thread th=new MyThread(lblNewLabel,frame);
+		th.start();
+		bt=new JButton("停止线程");
+		bt.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				th.interrupt();
+			}
+		});
+		
+		
+		frame.add(lblNewLabel);
+		frame.add(bt);
+		frame.setVisible(true);
+	}
+}

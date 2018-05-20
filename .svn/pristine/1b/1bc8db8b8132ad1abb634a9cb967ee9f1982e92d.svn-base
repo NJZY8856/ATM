@@ -1,0 +1,159 @@
+package controller.card;
+
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
+import util.MyDocument;
+import util.RButton;
+import util.WindowSize;
+import dao.CardDao;
+import login.UserFunction;
+import model.CardModel;
+import util.CurrentCardInfo;
+
+public class ChangePwd implements WindowSize{
+	private JFrame frame;
+	private JLabel label1;
+	private JLabel label2;
+	private JLabel label3;
+	private JPasswordField oldPwd;
+	private JPasswordField newPwd;
+	private JPasswordField confirmPwd;
+	private JButton button1;
+	private JButton button2;
+	private CurrentCardInfo CurrCard =new CurrentCardInfo();
+	private CardModel card=new CardModel();
+	
+	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ChangePwd window = new ChangePwd();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+		public ChangePwd(){
+		frame=new JFrame("修改密码");
+		frame.setBounds(F_0, F_1, F_2, F_3);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		label1=new JLabel("请输入旧密码：");
+		label1.setForeground(Color.WHITE);
+		label1.setFont(new Font("黑体", Font.BOLD, 18));
+		label1.setBounds(150, 180, 140, 35);
+		frame.getContentPane().add(label1);
+		
+		label2=new JLabel("请输入新密码：");
+		label2.setForeground(Color.WHITE);
+		label2.setFont(new Font("黑体", Font.BOLD, 18));
+		label2.setBounds(150, 240, 140, 35);
+		frame.getContentPane().add(label2);
+		
+		label3=new JLabel("再次确认密码：");
+		label3.setForeground(Color.WHITE);
+		label3.setFont(new Font("黑体", Font.BOLD, 18));
+		label3.setBounds(150,300,140,35);
+		frame.getContentPane().add(label3);
+		
+		oldPwd=new JPasswordField();
+		oldPwd.setDocument(new MyDocument(6));
+		oldPwd.setBounds(295,180,200,35);
+		frame.getContentPane().add(oldPwd);
+		
+		newPwd=new JPasswordField();
+		newPwd.setDocument(new MyDocument(6));//限制文本框输入长度为6位
+		newPwd.setBounds(295,240,200,35);
+		frame.getContentPane().add(newPwd);
+		
+		confirmPwd=new JPasswordField();
+		confirmPwd.setDocument(new MyDocument(6));
+		confirmPwd.setBounds(295,300,200,35);
+		frame.getContentPane().add(confirmPwd);
+		
+		JLabel tip1 = new JLabel("");
+		tip1.setForeground(Color.RED);
+		tip1.setFont(new Font("宋体", Font.PLAIN, 18));
+		tip1.setBounds(505, 180, 190, 35);
+		frame.getContentPane().add(tip1);
+
+		JLabel tip2 = new JLabel("");
+		tip2.setForeground(Color.RED);
+		tip2.setFont(new Font("宋体", Font.PLAIN, 18));
+		tip2.setBounds(505, 240, 233, 35);
+		frame.getContentPane().add(tip2);
+		
+		//System.out.println(card.getCardInfo().getCard_id());
+		button1=new RButton("确认");
+		button1.setBounds(537,388,133, 41);
+		//button1.setForeground(Color.WHITE);
+		button1.setFont(new Font("黑体", Font.BOLD, 18));
+		frame.getContentPane().add(button1);
+		button1.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				if(oldPwd.getText().equals(CurrCard.getCardInfo().getPassword())){	//判断输入的旧密码是否正确
+					if(newPwd.getText().matches("[1-9]\\d{5}(?!\\d)")){
+						if(newPwd.getText().equals(confirmPwd.getText())){				//判断前后两次输入的新密码是否一致
+							card=CurrCard.getCardInfo();							
+							card.setPassword(newPwd.getText());  //修改密码
+							CurrCard.setCardInfo(card);
+						//	System.out.println(CurrCard.getCardInfo());
+							int i=new CardDao().changePasswd(CurrCard.getCardInfo().getPassword(),card.getCard_id());	//更新数据库里的密码
+							System.out.println(i);
+							frame.dispose();
+							new ChangePwdSucc(1);
+						}else{
+							tip2.setText("两次输入密码不一致");
+							System.out.println("两次输入密码不一致");
+						}
+					}				
+					else{
+						tip2.setText("密码必须是六位数字");
+					}
+				}
+				else{			
+					tip1.setText("旧密码输入错误");
+					System.out.println("旧密码输入错误");
+				}
+			}
+		});
+		
+		button2=new RButton("返回");
+		button2.setBounds(0,388,133,41);
+		button2.setFont(new Font("黑体",Font.BOLD,18));
+		frame.getContentPane().add(button2);
+		button2.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				frame.dispose();
+				new UserFunction();
+			}
+		});
+		
+		JLabel label_1 = new JLabel("");
+		label_1.setIcon(new ImageIcon(".\\2.jpg"));
+		label_1.setBounds(0, -16, 689, 541);
+		frame.getContentPane().add(label_1);
+		
+		frame.setVisible(true);
+		
+		
+}
+}

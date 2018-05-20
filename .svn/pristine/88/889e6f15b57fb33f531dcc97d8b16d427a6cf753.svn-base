@@ -1,0 +1,428 @@
+package controller.admin;
+
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar; 
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollBar;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import login.AdmnFunction;
+import model.CardModel;
+import model.UserModel;
+import service.CardService;
+import service.UserService;
+import util.CurrentCardInfo;
+import util.WindowSize;
+
+import javax.swing.JRadioButton;
+import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.JPanel;
+/**
+ * 管理员-开户
+ * 
+ * 根据卡的类型——判断透支额度为多少
+ * 状态默认：01正常
+ * 开卡时间：获取系统当前时间
+ * @author LiangShuilian
+ *
+ */
+public class AdminOpenAccount implements WindowSize {
+
+	private JFrame frame;
+	private JLabel label;
+	private JTextField name;
+	private JLabel label_1;
+	private JTextField id;
+	private JLabel label_2;
+	private JTextField address;
+	private JLabel label_3;
+	private JTextField phone;
+	private JLabel label_4;
+	private JTextField card_id;
+	private JLabel label_5;
+	private JTextField bank_code;
+	private JLabel label_6;
+	private JTextField password;
+	private JLabel label_6_2;
+	private JTextField password2;
+	private JLabel label_7;
+	private JTextField moneys;
+	private JLabel label_8;
+	private JLabel label_9;
+	private JLabel label_10;
+	
+	private JButton button;
+	private JButton button_1;
+	private JButton button_back;
+	private JLabel label_warn;
+	
+	private ButtonGroup buttonGroup;
+	private JRadioButton xingYong;//信用
+	private JRadioButton chuXu;//定期
+	
+	private JPanel panel;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					AdminOpenAccount window = new AdminOpenAccount();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 * @wbp.parser.entryPoint
+	 */
+	public AdminOpenAccount() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(F_0, F_1, F_2, F_3);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		panel.setLayout(null);
+		panel = new JPanel();
+		panel.setBounds(P_0, P_1, P_2, P_3);
+		panel.setLayout(null);
+		
+		
+		label = new JLabel("姓名");
+		label.setForeground(Color.WHITE);
+		label.setHorizontalAlignment(SwingConstants.RIGHT);
+		label.setBounds(60, 100, 60, 30);
+		panel.add(label);
+		
+		name = new JTextField();
+		name.setBounds(130, 100, 140, 30);
+		panel.add(name);
+		name.setColumns(10);
+		
+		label_1 = new JLabel("身份证号");
+		label_1.setForeground(Color.WHITE);
+		label_1.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_1.setBounds(60, 160, 60, 30);
+		panel.add(label_1);
+		
+		id = new JTextField();
+		id.setBounds(130, 160, 140, 30);
+		panel.add(id);
+		id.setColumns(10);
+		
+		label_2 = new JLabel("住址");
+		label_2.setForeground(Color.WHITE);
+		label_2.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_2.setBounds(60, 220, 60, 30);
+		panel.add(label_2);
+		
+		address = new JTextField();
+		address.setBounds(130, 220, 140, 30);
+		panel.add(address);
+		address.setColumns(10);
+		
+		label_3 = new JLabel("联系电话");
+		label_3.setForeground(Color.WHITE);
+		label_3.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_3.setBounds(60, 280, 60, 30);
+		panel.add(label_3);
+		
+		phone = new JTextField();
+		phone.setBounds(130, 280, 140, 30);
+		panel.add(phone);
+		phone.setColumns(10);
+		
+		label_4 = new JLabel("银行卡号");
+		label_4.setForeground(Color.WHITE);
+		label_4.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_4.setBounds(350, 40, 60, 30);
+		panel.add(label_4);
+		
+		card_id = new JTextField();
+		card_id.setBounds(420, 40, 145, 30);
+		panel.add(card_id);
+		card_id.setColumns(10);
+		
+		label_9 = new JLabel("19位数字");
+		label_9.setForeground(Color.RED);
+		label_9.setBounds(565, 40, 60, 30);
+		panel.add(label_9);
+		
+		label_10 = new JLabel("6位数字");
+		label_10.setForeground(Color.RED);
+		label_10.setBounds(565, 100, 60, 30);
+		panel.add(label_10);
+		
+		label_6 = new JLabel("默认密码");
+		label_6.setForeground(Color.WHITE);
+		label_6.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_6.setBounds(350, 100, 60, 30);
+		panel.add(label_6);
+		
+		password = new JTextField();
+		password.setBounds(420, 100, 145, 30);
+		panel.add(password);
+		password.setColumns(10);
+		
+		label_6_2 = new JLabel("确认密码");
+		label_6_2.setForeground(Color.WHITE);
+		label_6_2.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_6_2.setBounds(350, 160, 60, 30);
+		panel.add(label_6_2);
+		
+		password2 = new JTextField();
+		password2.setBounds(420, 160, 145, 30);
+		panel.add(password2);
+		password2.setColumns(10);
+		
+		label_5 = new JLabel("所属银行编码");
+		label_5.setForeground(Color.WHITE);
+		label_5.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_5.setBounds(297, 220, 113, 30);
+		panel.add(label_5);
+		
+		bank_code = new JTextField();
+		bank_code.setBounds(420, 220, 145, 30);
+		panel.add(bank_code);
+		bank_code.setColumns(10);
+		
+		
+		label_7 = new JLabel("余额");
+		label_7.setForeground(Color.WHITE);
+		label_7.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_7.setBounds(350, 280, 60, 30);
+		panel.add(label_7);
+		
+		moneys = new JTextField();
+		moneys.setBounds(420, 280, 145, 30);
+		panel.add(moneys);
+		moneys.setColumns(10);
+		
+		label_8 = new JLabel("卡类型");
+		label_8.setForeground(Color.WHITE);
+		label_8.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_8.setBounds(350, 340, 60, 30);
+		panel.add(label_8);
+		
+		buttonGroup = new ButtonGroup();
+		xingYong = new JRadioButton("信用卡");
+		xingYong.setBounds(420, 340, 71, 30);
+		xingYong.setSelected(true);
+		buttonGroup.add(xingYong);
+		panel.add(xingYong);
+		
+		chuXu = new JRadioButton("储蓄卡");
+		chuXu.setBounds(487, 340, 78, 30);
+		buttonGroup.add(chuXu);
+		panel.add(chuXu);
+		
+		button = new JButton("提交");
+		button.setFont(new Font("黑体", Font.BOLD, 20));
+		button.setBounds(547, 403, 123, 39);
+		panel.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				UserModel user = new UserModel();
+				CardModel card = new CardModel();
+				int flag = -1;
+				int rel = 0;
+				user.setName(name.getText().trim());
+				user.setId(id.getText().trim());
+				user.setPhone(phone.getText().trim());
+				user.setAddress(address.getText().trim());
+				
+				card.setCard_id(card_id.getText());
+				card.setBank_code(bank_code.getText().trim());
+				card.setPassword(password.getText().trim());//密码
+				card.setId(id.getText().trim());
+				user.setAdmin_id(password2.getText().trim());//确认密码
+				card.setStatus(1);
+				if(xingYong.isSelected()){
+					card.setType(1);card.setCredit_line(2000);
+				} else if(chuXu.isSelected()) {
+					card.setType(2);card.setCredit_line(0);
+				}
+				if(moneys.getText().trim().matches("([1-9]\\d*|0)(\\.\\d{1,2})?"))
+					flag = checkDate(user,card);
+				else
+					flag = 5;
+				if( moneys.getText().trim().equals(""))
+					flag = 5;
+				if(flag == 1){
+					JOptionPane.showConfirmDialog(null,"信息不能为空","",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				} else if(flag == 2){
+					JOptionPane.showConfirmDialog(null,"身份证号不规范（18位）","",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				} else if(flag == 3){
+					JOptionPane.showConfirmDialog(null,"银行卡号不规范（19位）","",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				} else if(flag == 4){
+					JOptionPane.showConfirmDialog(null,"密码不正确","",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				} else if(flag == 5){
+					JOptionPane.showConfirmDialog(null,"余额输入不规范","",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				} else if(flag == 0){
+					int value = -1;
+					value = JOptionPane.showConfirmDialog(null,"确认提交信息？","",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if(value == 0){
+						CurrentCardInfo current = new CurrentCardInfo();
+						card.setMoneys(Double.parseDouble(moneys.getText().trim()));
+						user.setAdmin_id(current.getAdmin_id());						//补充管理员编号
+						UserService userService = new UserService();
+						CardService cardSerice = new CardService();
+						if(userService.getUserModel(user.getId()) == null){
+							if(userService.addUser(user) && cardSerice.addCrad(card)){
+								rel = 1;//提交成功，跳转成功页面
+								System.out.println("success commit");
+							}else{
+								System.out.println("fail commit");//保存失败
+							}
+						}else{
+							value = JOptionPane.showConfirmDialog(null,"该用户信息已存在是否覆盖？","",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+							if(value == 0){
+								if(userService.updateUser(user) && cardSerice.addCrad(card)){
+									rel = 1;//提交成功，跳转成功页面
+									System.out.println("success commit");
+	 							}else{
+	 								rel = 3;
+	 								System.out.println("fail commit");//保存失败
+								}
+							}else {
+								if(cardSerice.addCrad(card)){
+									rel = 1;//提交成功，跳转成功页面
+									System.out.println("success commit");
+								}else{
+	 								rel = 3;
+									System.out.println("fail commit");//保存失败
+								}
+							}
+						}
+						System.out.println("确认提交");
+					}else{
+						rel = 2;
+						System.out.println("不提交");
+					}
+					
+				}
+				
+				if(rel == 1){
+					panel.setVisible(false);
+					label_warn.setText("信息保存成功");
+					label_warn.setVisible(true);
+					button_back.setVisible(true);
+				}else if(rel == 2){
+					panel.setVisible(false);
+					label_warn.setText("信息已取消保存");
+					label_warn.setForeground(Color.red);
+					label_warn.setVisible(true);
+					button_back.setVisible(true);
+				}else if(rel == 3){
+					panel.setVisible(false);
+					label_warn.setText("信息保存失败");
+					label_warn.setForeground(Color.red);
+					label_warn.setVisible(true);
+					button_back.setVisible(true);
+				}
+			}
+		});
+		
+		
+		button_1 = new JButton("返回");
+		button_1.setFont(new Font("黑体", Font.BOLD, 20));
+		button_1.setBounds(0, 403, 123, 39);
+		panel.add(button_1);
+		button_1.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				int value = JOptionPane.showConfirmDialog(null,"确认取消？","",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if(value == 0){
+					frame.dispose();
+					new AdmnFunction();
+				}
+			}
+		});
+		
+		////// 成功界面 按钮----start--------------------------
+		
+		label_warn = new JLabel("创建成功");				//提示/警告等
+		label_warn.setHorizontalAlignment(SwingConstants.CENTER);
+		label_warn.setFont(new Font("黑体", Font.BOLD, 26));
+		label_warn.setForeground(Color.green);
+		label_warn.setVisible(false);
+		label_warn.setBounds(67, 180, 517, 56);
+		frame.getContentPane().add(label_warn);
+		
+		button_back = new JButton("返回菜单");
+		button_back.setFont(new Font("黑体", Font.BOLD, 18));
+		button_back.setBounds(0, 362, 123, 39);
+		button_back.setVisible(false);
+		frame.getContentPane().add(button_back);
+		button_back.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+					frame.dispose();
+					new AdmnFunction();
+			}
+		});
+		
+		////// ----------------ending--------------------------		
+
+//////-------------------------------------------------
+		
+		JLabel panelBackground = new JLabel("background");
+		panelBackground.setBackground(SystemColor.text);
+		panelBackground.setFont(new Font("SimSun-ExtB", Font.PLAIN, 12));
+		panelBackground.setIcon(new ImageIcon(".\\5.jpg"));
+		panelBackground.setBounds(0, 0, 670, 501);
+		panel.add(panelBackground);
+		
+		frame.getContentPane().add(panel);
+		
+		JLabel lblBackground = new JLabel("background");
+		lblBackground.setBackground(SystemColor.text);
+		lblBackground.setFont(new Font("SimSun-ExtB", Font.PLAIN, 12));
+		lblBackground.setIcon(new ImageIcon(".\\5.jpg"));
+		lblBackground.setBounds(0, 0, 670, 501);
+		frame.getContentPane().add(lblBackground);
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
+		frame.setVisible(true);
+	}
+
+	protected int checkDate(UserModel user, CardModel card) {
+		if(user.getName().equals("") || user.getPhone().equals("") || user.getAddress().equals("")
+				||card.getBank_code().equals(""))
+			return 1;//信息不能为空
+		if(!user.getId().matches("\\d{17}[0-9xX]|\\d{15}"))
+			return 2;//身份证号不规范（18位）
+		if(!card.getCard_id().matches("[0-9]{19}"))
+			return 3;//银行卡号不规范
+		if(!card.getPassword().equals(user.getAdmin_id()) || !card.getPassword().matches("[0-9]{6}"))
+			return 4;//密码不正确
+		else
+			return 0;//正确
+	}
+}

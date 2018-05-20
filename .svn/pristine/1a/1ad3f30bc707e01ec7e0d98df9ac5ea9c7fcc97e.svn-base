@@ -1,0 +1,50 @@
+package util;
+
+import javax.swing.*;
+
+import login.UserLogin;
+
+import java.awt.event.*;
+import java.util.concurrent.Callable;
+import java.awt.*;
+
+/**
+ * 倒计时 用法：【打开窗口就开始计时】 具体用法、效果看TestMyThread类或UserFunction lblNewLabel = new
+ * JLabel("New label"); lblNewLabel.setBounds(418, 57, 91, 27);
+ * lblNewLabel.setForeground(Color.white); new Thread(new
+ * MyThread(lblNewLabel)).start();
+ * 
+ * @author Lanny
+ *
+ */
+public class MyThread extends Thread {
+	private JLabel lblNewLabel = new JLabel();
+	private JFrame frame = new JFrame();
+	public static volatile boolean exit = false;
+	int time = 60;
+
+	public MyThread(JLabel lblNewLabel, JFrame frame) {
+		this.frame = frame;
+		this.lblNewLabel.setFont(new Font("黑体", Font.BOLD, 15));
+		this.lblNewLabel.setBounds(570, 28, 107, 25);
+		this.lblNewLabel.setForeground(Color.white);
+		this.lblNewLabel = lblNewLabel;
+
+	}
+
+	public void run() {
+		while (time > 0) {
+			time--;
+			lblNewLabel.setText("倒计时：" + time + "秒");
+			try {
+				Thread.sleep(1000);
+			} catch (Exception e) {
+				break;
+			}
+		}
+		if (time == 0) {
+			frame.dispose();
+			new UserLogin();
+		}
+	}
+}

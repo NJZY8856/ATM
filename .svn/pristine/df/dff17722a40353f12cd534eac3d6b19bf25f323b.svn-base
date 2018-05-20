@@ -1,0 +1,413 @@
+package controller.card;
+
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.sql.Timestamp;
+//import java.sql.Date;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import dao.CardDao;
+import dao.TradDao;
+import login.UserFunction;
+import login.UserLogin;
+import util.WindowSize;
+import util.CurrentCardInfo;
+import util.RButton;
+import util.StrADate;
+import model.CardModel;
+import model.TradModel;
+import service.TradService;
+
+public class WithdrawMoney extends JPanel implements WindowSize {
+	private JFrame frame;
+	private JPanel panel = new JPanel();
+	//private JPanel panel1 = new JPanel();
+	private JPanel panel2 = new JPanel();
+	private JButton button1;
+	private JButton button2;
+	private JButton button3;
+	private JButton button4;
+	private JButton button5;
+	private JButton button6;
+	private JButton button7;
+	private JButton button8;
+	private JLabel label1;
+	private JLabel label2;
+	private JTextField text;
+	private TradModel trad;
+	private JLabel labeltip;
+	private JLabel lblNewLabel_1;
+
+	CurrentCardInfo CurrCard = new CurrentCardInfo();
+
+	public WithdrawMoney(JFrame frame) {
+		this.frame = frame;
+		this.setLayout(null);
+		this.setBounds(P_0, P_1, P_2, P_3);
+		panel.setBackground(null);
+		panel.setOpaque(false);
+		panel.setBounds(0, 0, 680, 500);
+		add(panel);
+		panel.setLayout(null);
+
+		button1 = new RButton("100");
+		button1.setBounds(0, 165, 110, 41);
+		button1.setFont(new Font("黑体", Font.BOLD, 18));
+		panel.add(button1);
+		button1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int curr_withdrawMoney = Integer.parseInt(button1.getText().trim()); // 获取当前的取款金额
+				if (CurrCard.getCardInfo().getStatus() != 3) { // 判断卡是否处于冻结状态
+					withdraw_money(curr_withdrawMoney, CurrCard);
+				} else {
+					panel.setVisible(false);
+					lblNewLabel_1.setText("卡已被冻结，不能进行取款操作");
+					panel2.setVisible(true);
+					System.out.println("卡已被冻结，不能进行取款操作");
+				}
+			}
+		});
+
+		button2 = new RButton("300");
+		button2.setBounds(0, 240, 110, 41);
+		button2.setFont(new Font("黑体", Font.BOLD, 18));
+		panel.add(button2);
+		button2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int curr_withdrawMoney = Integer.parseInt(button2.getText().trim()); // 获取当前的取款金额
+				if (CurrCard.getCardInfo().getStatus() != 3) { // 判断卡是否处于冻结状态
+					withdraw_money(curr_withdrawMoney, CurrCard);
+				} else {
+					panel.setVisible(false);
+					lblNewLabel_1.setText("卡已被冻结，不能进行取款操作");
+					panel2.setVisible(true);
+					System.out.println("卡已被冻结，不能进行取款操作");
+				}
+			}
+		});
+
+		button3 = new RButton("500");
+		button3.setBounds(0, 315, 110, 41);
+		button3.setFont(new Font("黑体", Font.BOLD, 18));
+		panel.add(button3);
+		button3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int curr_withdrawMoney = Integer.parseInt(button3.getText().trim()); // 获取当前的取款金额
+				if (CurrCard.getCardInfo().getStatus() != 3) { // 判断卡是否处于冻结状态
+					withdraw_money(curr_withdrawMoney, CurrCard);
+				} else {
+					panel.setVisible(false);
+					lblNewLabel_1.setText("卡已被冻结，不能进行取款操作");
+					panel2.setVisible(true);
+					System.out.println("卡已被冻结，不能进行取款操作");
+				}
+			}
+		});
+
+		button4 = new RButton("1000");
+		button4.setBounds(570, 165, 110, 41);
+		// button4.setForeground(Color.WHITE);
+		button4.setFont(new Font("黑体", Font.BOLD, 18));
+		panel.add(button4);
+		button4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int curr_withdrawMoney = Integer.parseInt(button4.getText().trim()); // 获取当前的取款金额
+				if (CurrCard.getCardInfo().getStatus() != 3) { // 判断卡是否处于冻结状态
+					withdraw_money(curr_withdrawMoney, CurrCard);
+				} else {
+					panel.setVisible(false);
+					lblNewLabel_1.setText("卡已被冻结，不能进行取款操作");
+					panel2.setVisible(true);
+					System.out.println("卡已被冻结，不能进行取款操作");
+				}
+			}
+		});
+
+		button5 = new RButton("1500");
+		button5.setBounds(570, 240, 110, 41);
+		button5.setFont(new Font("黑体", Font.BOLD, 18));
+		panel.add(button5);
+		button5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int curr_withdrawMoney = Integer.parseInt(button5.getText().trim()); // 获取当前的取款金额
+				if (CurrCard.getCardInfo().getStatus() != 3) { // 判断卡是否处于冻结状态
+					withdraw_money(curr_withdrawMoney, CurrCard);
+				} else {
+					panel.setVisible(false);
+					lblNewLabel_1.setText("卡已被冻结，不能进行取款操作");
+					panel2.setVisible(true);
+					System.out.println("卡已被冻结，不能进行取款操作");
+				}
+			}
+		});
+
+		button6 = new RButton("2000");
+		button6.setBounds(570, 315, 110, 41);
+		button6.setFont(new Font("黑体", Font.BOLD, 18));
+		panel.add(button6);
+		button6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int curr_withdrawMoney = Integer.parseInt(button6.getText().trim()); // 获取当前的取款金额
+				if (CurrCard.getCardInfo().getStatus() != 3) { // 判断卡是否处于冻结状态
+					withdraw_money(curr_withdrawMoney, CurrCard);
+				} else {
+					panel.setVisible(false);
+					lblNewLabel_1.setText("卡已被冻结，不能进行取款操作");
+					panel2.setVisible(true);
+					System.out.println("卡已被冻结，不能进行取款操作");
+				}
+			}
+		});
+
+		label1 = new JLabel("请选择或输入取款金额");
+		label1.setBounds(235, 170, 200, 30);
+		label1.setForeground(Color.WHITE);
+		label1.setFont(new Font("黑体", Font.BOLD, 18));
+		panel.add(label1);
+
+		text = new JTextField();
+		text.setBounds(235, 210, 200, 30);
+		panel.add(text);
+		text.addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent e) {
+				int temp=e.getKeyChar();
+				if(temp>57){
+					e.consume();
+				}else if(temp < 48){  
+                    e.consume();  
+                } 
+			}
+		});
+
+		button7 = new RButton("返回");
+		button7.setBounds(0, 390, 110, 41);
+		button7.setFont(new Font("黑体", Font.BOLD, 18));
+		panel.add(button7);
+		button7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				new UserFunction();
+			}
+		});
+		
+		labeltip=new JLabel();
+		labeltip.setBounds(185,260,400,35);
+		labeltip.setFont(new Font("黑体", Font.BOLD, 18));
+		labeltip.setForeground(Color.red);
+		panel.add(labeltip);
+		labeltip.setVisible(false);
+		
+		button8 = new RButton("确认");
+		button8.setBounds(570, 390, 110, 41);
+		button8.setFont(new Font("黑体", Font.BOLD, 18));
+		panel.add(button8);
+		button8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int curr_withdrawMoney = Integer.parseInt(text.getText().trim()); // 获取当前的取款金额
+				if (CurrCard.getCardInfo().getStatus() != 3) { // 判断卡是否处于冻结状态
+					if (curr_withdrawMoney % 100 == 0 && curr_withdrawMoney > 0) { // 判断输入的金额是否是100的正整数倍
+						if (curr_withdrawMoney <= 2000) { // 判断输入的数字是否小于2000
+							withdraw_money(curr_withdrawMoney, CurrCard);
+						} else {
+							labeltip.setText("一次取款不能超过2000元,请重新输入");
+							labeltip.setVisible(true);
+							System.out.println("一次取款不能超过2000元");
+						}
+					} else {
+						labeltip.setText("输入的取款金额必须是100的正整数倍");
+						labeltip.setVisible(true);
+						System.out.println("输入的取款金额必须是100的正整数倍");
+					}
+				} else {
+					
+					panel.setVisible(false);
+					lblNewLabel_1.setText("卡已被冻结，不能进行取款操作");
+					panel2.setVisible(true);
+					System.out.println("卡已被冻结，不能进行取款操作");
+				}
+			}
+		});
+
+		withdrawMoneyFail();
+
+		// 设置背景图片
+		JLabel label_1 = new JLabel("");
+		label_1.setIcon(new ImageIcon(".\\2.jpg"));
+		label_1.setBounds(P_0, P_1, P_2, P_3);
+		add(label_1);
+	}
+
+	// 判断取款是否成功
+	private void withdraw_money(int curr_withdrawMoney,CurrentCardInfo CurrCard){
+		//CardModel card = new CardModel();
+		String id=CurrCard.getCardInfo().getCard_id();	//获取当前账户的账号
+		CurrCard.setCardInfo(new CardDao().checkCard(id));//获取数据库最新数据
+		double currMoney=CurrCard.getCardInfo().getMoneys();//获取当前账户余额
+		String curr_bankCode=CurrCard.getCardInfo().getBank_code(); //获取当前银行编号
+		int curr_type=CurrCard.getCardInfo().getType(); //获取当前卡的类型
+		System.out.println("jj"+curr_type);
+		double curr_creditLine=CurrCard.getCardInfo().getCredit_line();//获取当前卡的透支额度
+		int curr_status=CurrCard.getCardInfo().getStatus();//获取当前卡的状态
+		double today_withdrawMoney=new TradService().getTodayTrad(id, 2);//获取当天的取款金额
+		System.out.println(CurrCard);
+		double serviceMoney=curr_withdrawMoney*0.001;
+		
+		trad=new TradModel();                 //获得当前账户的交易信息
+		trad.setCard_id(id);
+		trad.setAmount(curr_withdrawMoney);
+		trad.setTrad_type(2);	
+		trad.setTrad_to(id);
+		System.out.println(trad);
+		
+		if(today_withdrawMoney+curr_withdrawMoney<=5000){  //判断当天取款金额是否小于5000元
+			if(curr_bankCode.equals(new CurrentCardInfo().bankcode)){  //判断是否是本行的卡
+					if(currMoney>=curr_withdrawMoney){
+						System.out.println("1"+(currMoney-curr_withdrawMoney));
+						new CardDao().updateMoney(currMoney-curr_withdrawMoney,curr_creditLine,id);
+						CurrCard.setCardInfo(new CardDao().checkCard(id));
+						System.out.println(CurrCard.getCardInfo().getCredit_line());
+						new TradService().addTrad(trad);
+						frame.dispose();
+						new WithdrawMoneySuc(CurrCard,curr_withdrawMoney);
+						System.out.println("取款成功");
+						
+					}
+					else{//余额不足时判断是否是信用卡
+						if(curr_type==1){
+							if(curr_creditLine-(curr_withdrawMoney-currMoney)>=0){ //可透支余额加余额大于等于取款金额
+								System.out.println("2"+(curr_creditLine-(curr_withdrawMoney-currMoney)));
+								new CardDao().updateMoney(0,curr_creditLine-(curr_withdrawMoney-currMoney),id);
+								CurrCard.setCardInfo(new CardDao().checkCard(id));
+								new TradService().addTrad(trad);
+								frame.dispose();
+								new WithdrawMoneySuc(CurrCard,curr_withdrawMoney);
+								System.out.println("取款成功");
+							}
+							else{
+								panel.setVisible(false);
+								lblNewLabel_1.setText("透支额度不足，取款失败");
+								panel2.setVisible(true);
+								System.out.println("透支额度不足，取款失败");
+							}
+						}
+						else{
+							panel.setVisible(false);
+							lblNewLabel_1.setText("余额不足，取款失败");
+							panel2.setVisible(true);
+							System.out.println("余额不足，取款失败");
+						}
+					}
+				}
+			else{ //跨行取款，需收取手续费
+				if(currMoney>=curr_withdrawMoney+serviceMoney){
+					System.out.println("3"+(currMoney-curr_withdrawMoney-serviceMoney));
+					new CardDao().updateMoney(currMoney-curr_withdrawMoney-serviceMoney,curr_creditLine,id);
+					CurrCard.setCardInfo(new CardDao().checkCard(id));
+					new TradService().addTrad(trad);
+					frame.dispose();
+					new WithdrawMoneySuc(CurrCard,curr_withdrawMoney);
+					System.out.println("取款成功");
+				}
+				else{
+					System.out.println("hahaha");
+					//余额不足时判断是否是信用卡
+					if(curr_type==1){
+						if(curr_creditLine-(curr_withdrawMoney-currMoney+serviceMoney)>=0){ //可透支余额加余额大于等于取款金额
+							System.out.println("4"+(curr_creditLine-(curr_withdrawMoney-currMoney-serviceMoney)));
+							new CardDao().updateMoney(0,curr_creditLine-(curr_withdrawMoney-currMoney-serviceMoney),id);
+							CurrCard.setCardInfo(new CardDao().checkCard(id));
+							new TradService().addTrad(trad);
+							frame.dispose();
+							new WithdrawMoneySuc(CurrCard,curr_withdrawMoney);
+							System.out.println("取款成功");
+						}
+						else{
+							panel.setVisible(false);
+							lblNewLabel_1.setText("透支额度不足，取款失败");
+							panel2.setVisible(true);
+							System.out.println("透支额度不足，取款失败");
+						}
+					}
+					else{
+						panel.setVisible(false);
+						lblNewLabel_1.setText("余额不足，取款失败");
+						panel2.setVisible(true);
+						System.out.println("余额不足，取款失败");
+					}
+				}
+			}
+		}
+		else{
+			panel.setVisible(false);
+			lblNewLabel_1.setText("今日取款已达上限，取款失败");
+			panel2.setVisible(true);
+				System.out.println("今日取款已达上限，取款失败");
+		}
+	}
+	
+	public void withdrawMoneyFail(){
+		panel2.setLayout(null);
+		panel2.setBounds(P_0, P_1, P_2, P_3);
+
+		//lblNewLabel_3 = new JLabel("");
+		//lblNewLabel_3.setForeground(Color.RED);
+		//lblNewLabel_3.setFont(new Font("黑体", Font.BOLD, 23));
+		//lblNewLabel_3.setBounds(179, 160, 491, 50);
+		//panel2.add(lblNewLabel_3);
+		
+		lblNewLabel_1 = new JLabel();
+		lblNewLabel_1.setForeground(Color.RED);
+		lblNewLabel_1.setFont(new Font("黑体", Font.BOLD, 23));
+		lblNewLabel_1.setBounds(179, 202, 425, 40);
+		panel2.add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_2 = new JLabel("请按确认返回取款界面");
+		lblNewLabel_2.setForeground(Color.RED);
+		lblNewLabel_2.setFont(new Font("黑体", Font.BOLD, 23));
+		lblNewLabel_2.setBounds(209, 256, 323, 35);
+		panel2.add(lblNewLabel_2);
+
+		JButton button = new JButton("确认");
+		button.setFont(new Font("黑体", Font.BOLD, 18));
+		button.setBounds(0, 389, 107, 35);
+		panel2.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				panel2.setVisible(false);
+				panel.setVisible(true);
+			}
+		});
+
+		JButton btnNewButton_1 = new JButton("退卡");
+		btnNewButton_1.setFont(new Font("黑体", Font.BOLD, 18));
+		btnNewButton_1.setBounds(573, 389, 107, 35);
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frame.dispose();
+				new UserLogin();
+			}
+		});
+		panel2.add(btnNewButton_1);
+
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setIcon(new ImageIcon(".\\2.jpg"));
+		lblNewLabel.setBounds(P_0, P_1, P_2, P_3);
+		panel2.add(lblNewLabel);
+		add(panel2);
+		panel2.setVisible(false);
+	}
+	
+}
